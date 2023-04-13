@@ -1,0 +1,61 @@
+翻墙后可以访问这个网址教程：https://bulianglin.com/archives/nicename.html
+
+未翻墙文字说明：
+1.域名购买:
+namesilo：https://name.bulianglin.com
+优惠码：oldtong
+
+2.SSH工具
+FinalShell：https://www.hostbuf.com/t/988.html
+
+3.节点搭建
+#更新软件源
+apt update
+#启用 BBR TCP 拥塞控制算法
+echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+sysctl -p
+
+#安装x-ui：
+提示curl错误 则安装		apt update -y          # Debian/Ubuntu 命令
+				apt install -y curl socat    #Debian/Ubuntu 命令
+bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+
+#安装nginx
+apt install nginx
+#安装acme：
+curl https://get.acme.sh | sh
+#添加软链接：
+ln -s  /root/.acme.sh/acme.sh /usr/local/bin/acme.sh
+#切换CA机构： 
+acme.sh --set-default-ca --server letsencrypt
+#申请证书： 
+acme.sh  --issue -d 你的域名 -k ec-256 --webroot  /var/www/html
+#安装证书：
+acme.sh --install-cert -d 你的域名 --ecc \
+--key-file       /etc/x-ui/server.key \
+--fullchain-file /etc/x-ui/server.crt \
+--reloadcmd     "systemctl force-reload nginx"
+
+4.寻找适合的伪装站
+http站点优先，个人网盘符合单节点大流量特征
+
+示例关键字：intext:登录 Cloudreve
+
+5.配置nginx
+文件名x-ui-nginx.txt
+每次修改nginx配置文件后必须使用 systemctl reload nginx 命令重新加载配置文件
+
+6.多用户合租
+通过修改nginx的配置文件实现ws path路径分流
+
+location /ray {   #分流路径
+    proxy_redirect off;
+    proxy_pass http://127.0.0.1:10000; #Xray端口
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
