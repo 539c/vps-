@@ -32,12 +32,12 @@ http {
         ssl_prefer_server_ciphers off;
 
         location / {
-            proxy_pass https://pan.aaaab3n.moe/; #伪装网址
+            proxy_pass https://你找的伪装网址/; #伪装网址
             proxy_redirect off;
             proxy_ssl_server_name on;
             sub_filter_once off;
-            sub_filter "pan.aaaab3n.moe" $server_name;
-            proxy_set_header Host "pan.aaaab3n.moe";
+            sub_filter "更换" $server_name;
+            proxy_set_header Host "更换";
             proxy_set_header Referer $http_referer;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header User-Agent $http_user_agent;
@@ -48,7 +48,7 @@ http {
         }
 
 
-        location /75355c7a-ce1e-48b5-f521-f72a7981e605 {   #分流路径
+        location /ray {   #分流路径
             proxy_redirect off;
             proxy_pass http://127.0.0.1:10000; #Xray端口
             proxy_http_version 1.1;
@@ -59,7 +59,7 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
         
-        location /75355c7a-ce1e-48b5-f521-f72a7981e605-xui {   #xui路径
+        location /ray {   #xui路径
             proxy_redirect off;
             proxy_pass http://127.0.0.1:9999;  #xui监听端口
             proxy_http_version 1.1;
